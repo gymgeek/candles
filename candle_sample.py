@@ -1,7 +1,7 @@
 import mpu6050, machine, neopixel, time
 
 
-class Candle_simple:
+class Candle_sample:
     def __init__(self, acllimitval, shakeslimitcount, color):
         self.acl = None
         while 1:
@@ -66,4 +66,4 @@ class Candle_simple:
             self.np.write()
 
 
-candle = Candle_simple(5000, 10, [255, 50, 0])
+candle = Candle_sample(5000, 10, [255, 50, 0])

@@ -1,2 +1,2 @@
-from svicka_simple import *
+from candle_sample import *
 candle.start()

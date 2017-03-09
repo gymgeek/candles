@@ -21,6 +21,9 @@ class Candle_sample:
         self.val = None
         self.color = color
 
+        self.vibrator = machine.Pin(12,machine.Pin.OUT)
+        self.vibrator.value(0)
+
     def getval(self):
         while 1:
             try:
@@ -38,10 +41,11 @@ class Candle_sample:
         return False
 
     def gameover(self):
-        self.np[0] = (20, 0, 0)
+        self.np[0] = (5, 0, 0)
         self.np.write()
+        self.vibrator.value(1)
         time.sleep(2)
-        # todo vibrate
+        self.vibrator.value(0)
 
 
     def remapcol(self):

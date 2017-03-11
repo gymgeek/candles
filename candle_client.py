@@ -23,6 +23,7 @@ class Candle_client:
         self.shakeslimitcount = shakeslimitcount
         self.shakescount = 0
         self.val = None
+        self.last_acceleration = None
         self.color = color
 
         self.vibrator = machine.Pin(12,machine.Pin.OUT)
@@ -65,13 +66,20 @@ class Candle_client:
 
     def valbeyonlimits(self):
         self.getval()
-        x = self.val["GyX"]
-        y = self.val["GyY"]
-        z = self.val["GyZ"]
+        x = self.val["AcX"]
+        y = self.val["AcY"]
+        z = self.val["AcZ"]
 
-        velocity = (x**2 + y**2 + z**2)**0.5
-        print("veloc:",velocity)
-        if velocity > self.acllimitval:
+        last_x = self.last_acceleration["AcX"]
+        last_y = self.last_acceleration["AcY"]
+        last_z = self.last_acceleration["AcZ"]
+
+        self.last_acceleration = self.val
+
+
+        jerk = ((x - last_x)**2 + (y - last_y)**2 + (z - last_z)**2)**0.5
+        print("jerk:",jerk)
+        if jerk > self.acllimitval:
             return True
         return False
 
@@ -92,6 +100,9 @@ class Candle_client:
 
     def start(self):
         self.server_socket.setblocking(0)
+        self.getval()
+        self.last_acceleration = self.val
+
         while 1:
             
             received = None
@@ -156,6 +167,10 @@ class Candle_client:
             else:
                 if self.shakescount > 0:
                     self.shakescount -= 1
+
+
+            print(self.shakescount)
+
             if self.shakescount > self.shakeslimitcount:
                 self.gameover()
                 self.shakescount = 0

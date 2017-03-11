@@ -2,6 +2,8 @@ import network, time
 import neopixel, machine
 np = neopixel.NeoPixel(machine.Pin(14), 1)
 
+r = machine.reset
+
 np[0] = (50,50,50)
 np.write()
 
@@ -22,5 +24,6 @@ while 1:
 
 from candle_client import *
 
-candle = Candle_client("172.16.34.50",15000, 10, [255, 50, 0])
+# Candle_client(server_ip, acllimitval, shakeslimitcount, color,port=2260)
+candle = Candle_client("172.16.34.50",400, 100, [255, 50, 0])
 candle.start()

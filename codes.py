@@ -1,0 +1,6 @@
+byte_red = b"r"
+byte_orange = b"o"
+byte_green = b"g"
+byte_start = b"s"
+byte_win = b"w"
+byte_lost = b"l"

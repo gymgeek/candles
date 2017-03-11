@@ -3,7 +3,7 @@ import machine
 
 class accel():
     def __init__(self):
-        self.iic = machine.I2C(machine.Pin(5), machine.Pin(4))
+        self.iic = machine.I2C(scl=machine.Pin(5), sda=machine.Pin(4))
         self.iic.start()
         self.iic.writeto(0x68, bytearray([107, 0]))
         self.iic.stop()
@@ -42,3 +42,17 @@ class accel():
     def val_test(self):  # ONLY FOR TESTING! Also, fast reading sometimes crashes IIC
         while 1:
             print(self.get_values())
+            
+    def test_only(self):
+        while 1:
+            try:
+                a = self.get_values()
+                print(a["AcX"],end=";")
+                print(a["AcY"],end=";")
+                print(a["AcZ"],end=";")
+                print(a["GyX"],end=";")
+                print(a["GyY"],end=";")
+                print(a["GyZ"])
+            except:
+                pass
+

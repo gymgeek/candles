@@ -34,10 +34,18 @@ class Candle_sample:
 
     def valbeyonlimits(self):
         self.getval()
-        if abs(self.val["GyX"]) > self.acllimitval or abs(self.val["GyY"]) > self.acllimitval or abs(
-                self.val["GyZ"]) > self.acllimitval:
-            print("1:" + str(self.val["GyX"]) + " " + str(self.val["GyY"]) + " " + str(self.val["GyZ"]))
+        x = self.val["GyX"]
+        y = self.val["GyY"]
+        z = self.val["GyZ"]
+
+        velocity = (x**2 + y**2 + z**2)**0.5
+        print("veloc:",velocity)
+        if velocity > self.acllimitval:
             return True
+        # if abs() > self.acllimitval or abs(self.val["GyY"]) > self.acllimitval or abs(
+        #        self.val["GyZ"]) > self.acllimitval:
+        #    print("1:" + str(self.val["GyX"]) + " " + str(self.val["GyY"]) + " " + str(self.val["GyZ"]))
+        #    return True
         return False
 
     def gameover(self):

@@ -25,5 +25,5 @@ while 1:
 from candle_client import *
 
 # Candle_client(server_ip, acllimitval, shakeslimitcount, color,port=2260)
-candle = Candle_client("172.16.34.50",400, 100, [255, 50, 0])
+candle = Candle_client("172.16.34.50", 400, 60, [255, 50, 0])
 candle.start()

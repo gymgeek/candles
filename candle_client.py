@@ -9,7 +9,7 @@ class Candle_client:
         while 1:
             try:
                 self.acl = mpu6050.accel()
-                print("accel init");
+                print("accel init")
                 break
             except:
                 print("accelinit iicerror")
@@ -23,8 +23,10 @@ class Candle_client:
         self.shakeslimitcount = shakeslimitcount
         self.shakescount = 0
         self.val = None
-        self.last_acceleration = None
         self.color = color
+
+        self.gravity = 16900
+        self.last_magnitude = 0
 
         self.vibrator = machine.Pin(12,machine.Pin.OUT)
         self.vibrator.value(0)
@@ -59,6 +61,7 @@ class Candle_client:
         while 1:
             try:
                 self.val = self.acl.get_values()
+                self.val["AcY"] += self.gravity
                 break
             except:
                 #print("getval0 iicerror")
@@ -66,20 +69,19 @@ class Candle_client:
 
     def valbeyonlimits(self):
         self.getval()
-        x = self.val["AcX"]
-        y = self.val["AcY"]
-        z = self.val["AcZ"]
 
-        last_x = self.last_acceleration["AcX"]
-        last_y = self.last_acceleration["AcY"]
-        last_z = self.last_acceleration["AcZ"]
+        magnitude = (self.val["AcX"] ** 2 + self.val["AcY"] ** 2 + self.val["AcZ"] ** 2) ** 0.5
 
-        self.last_acceleration = self.val
+        change = abs(magnitude - self.last_magnitude)
+
+        self.last_magnitude = magnitude
 
 
-        jerk = ((x - last_x)**2 + (y - last_y)**2 + (z - last_z)**2)**0.5
-        print("jerk:",jerk)
-        if jerk > self.acllimitval:
+#        jerk = ((x - last_x)**2 + (y - last_y)**2 + (z - last_z)**2)**0.5
+
+        print("change:",change)
+
+        if change > self.acllimitval:
             return True
         return False
 
@@ -93,9 +95,15 @@ class Candle_client:
 
 
     def remapcol(self):
+
         retcol = []
+        multiplier = (1 - (self.shakescount / self.shakeslimitcount)) ** 4
+        if multiplier < 0:
+            multiplier = 0
+
         for col in self.color:
-            retcol.append(int((col / self.shakeslimitcount) * (self.shakeslimitcount - self.shakescount)))
+            retcol.append(int(col * multiplier))
+
         return retcol
 
     def start(self):

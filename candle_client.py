@@ -130,15 +130,18 @@ class Candle_client:
             elif received == codes.byte_green:
                 print("green")
                 self.np[0] = (0,255,0)
-                self.vibrator.value(1)
+                #self.vibrator.value(1)
+
             elif received == codes.byte_start:
                 print("start")
                 self.np[0] = (0,0,255)
                 self.vibrator.value(0)
                 self.started = time.time()
+                self.shakescount = 0
+
             elif received == codes.byte_win:
                 print("win")
-                while 1:
+                for i in range(5):
                     self.vibrator.value(1)
                     self.np[0] = (255,255,255)
                     self.np.write()
@@ -152,16 +155,27 @@ class Candle_client:
                     self.np[0] = (255,0,0)
                     self.np.write()
                     time.sleep(0.2)
+
+                self.np[0] = (100, 100, 50)
+                self.np.write()
+                self.vibrator.value(0)
+                self.started = 999999999999
+
             elif received == codes.byte_lost:
                 print("lost")
-                while 1:
+                for i in range(4):
                     self.vibrator.value(1)
                     self.np[0] = (255,0,0)
                     self.np.write()
-                    time.sleep(1)
+                    time.sleep(0.5)
                     self.np[0] = (0,0,0)
                     self.np.write()
                     time.sleep(0.5)
+
+                self.np[0] = (100, 100, 50)
+                self.np.write()
+                self.vibrator.value(0)
+                self.started = 999999999999
                     
             else:
                 if self.started < time.time():

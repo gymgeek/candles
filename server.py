@@ -1,33 +1,45 @@
-import socket, time, codes
+import socket, time, codes, machine
+
+r = machine.reset
 
 class Candle_server:
     clients = []
     server_socket = socket.socket()
+
+    button_pin = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_UP)
+
+
 
 
     def startServer(self, ip, port):
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((ip, port))
 
-    def connectClients(self, count):
+    def connectClients(self):
+        last_button_value = self.button_pin.value()
+
         self.server_socket.listen(5)
         self.server_socket.setblocking(0)
-        print("Waiting for " + str(count) + " clients to connect")
+        print("Waiting for clients to connect")
         self.clients = []
         try:
-            while len(self.clients) < count:
+            while self.button_pin.value() == last_button_value:
                 try:
                     client_socket, addr = self.server_socket.accept()
                     client_socket.setblocking(0)
                     self.clients.append((client_socket, addr))
                     print("Connected client #%s at address %s" % (len(self.clients), addr))
-                except IOError:
+                except:
                     pass
+
 
         except KeyboardInterrupt:
             self.server_socket.setblocking(1)
             print("Canceled, currently connected %s clients" % (len(self.clients)))
-        self.server_socket.listen(0)
+
+        self.clients_copy = self.clients[:]
+
+        #self.server_socket.listen(0)
 
         for client in self.clients:
             client[0].setblocking(0)
@@ -48,6 +60,8 @@ class Candle_server:
                 pass
 
     def start_game(self):
+
+        self.clients = self.clients_copy[:]
         self.wipe_clients()
         self.send_to_all_clients(codes.byte_red)
         print("red")
@@ -85,7 +99,18 @@ class Candle_server:
 
 server = Candle_server()
 server.startServer("0.0.0.0",2260)
-server.connectClients(2)
-time.sleep(3)
+server.connectClients()
 print("start")
-server.start_game()
+
+while True:
+    server.start_game()
+
+    button_state = server.button_pin.value()
+
+    while button_state == server.button_pin.value():
+        pass
+
+
+    time.sleep(0.2)
+
+
